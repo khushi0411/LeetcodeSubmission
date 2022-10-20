@@ -2,14 +2,18 @@ class Solution {
 public:
     string intToRoman(int num) {
         
+        // store the number in roman vector
         vector<int> roman;
-        
         roman={1,4,5,9,10,40,50,90,100,400,500,900,1000};
+        
+        // store the roman number in code vector
         vector<string> code;
         
         code =           {"I","IV","V","IX","X","XL","L","XC","C","CD","D","CM","M"};
-        string res="";
-        for(int i=12;i>=0;i--){
+        
+        string res=""; // to store the result 
+        
+        for(int i=12;i>=0;i--){   
             while(num>=roman[i]){
                 res.append(code[i]);
                 num-=roman[i];
