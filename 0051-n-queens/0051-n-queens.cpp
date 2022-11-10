@@ -1,68 +1,41 @@
 class Solution {
     
-    public: 
-    // checking if it is safe to put the queen at that place or not
-    bool issafe(int row, int col, vector<string> board, int n){
-        // check upper diagonal
-        int duprow=  row;
-        int dupcol =  col;
-        
-        while(row>=0 && col>=0)
-        {
-            if(board[row][col] == 'Q') return false;
-            row--;
-            col--;
-        }
-        // left side
-     col=  dupcol;
-        row= duprow;
-        
-        while(col >=0)
-        {
-            if(board[row][col] == 'Q') return false;
-            col--;
-        }
-        
-        // lower diagonal
-         row= duprow;
-             col=  dupcol;
-       
-        while(row< n && col >=0)
-        {
-
-            if(board[row][col] == 'Q') return false;
-            row++;
-            col--;
-            
-        }
-        return true;
-    }
-    
-    public:
-    void solve(int col, vector<string>&board, vector<vector<string>>&ans, int n)
-    {
-        
-        if(col == n) // base case 
-            // if iterations reached at end point then the col will goes out of bound
-        {
+public:
+    void solve(int col, vector<string>& board, vector<vector<string>> &ans, 
+               vector<int>& leftrow, vector<int>&upperdiagonal, vector<int>&lowerdiagonal,
+               int n
+              ){
+        //base case if col goes out of bound
+        if(col == n){
             ans.push_back(board);
             return;
         }
-        // iteating over rows
-        for(int row =  0; row < n; row++)
-        {
-            if(issafe(row, col, board, n))
+        // triversing over the row
+        for(int row = 0; row < n;row++){
+            // if it is not visited in leftrow, upperdiagonal and lowerdiagonal then simply 
+            // assign the queen
+            if(leftrow[row] == 0 && upperdiagonal[row+col] == 0 &&
+               lowerdiagonal[n-1+ col-row] == 0)
             {
                 board[row][col] = 'Q';
-                solve(col+1, board, ans, n);
-                board[row][col] = '.';
+                leftrow[row] = 1;
+                upperdiagonal[row+col] = 1;
+                lowerdiagonal[n-1+col-row] = 1;
+                // checking for another col
+                solve(col+1, board,ans, leftrow, upperdiagonal, lowerdiagonal, n);
+                // backtracking, removing it from the queue if recursion is done
+                board[row][col] ='.';
+                leftrow[row] = 0;
+                upperdiagonal[row+col] = 0;
+                lowerdiagonal[n-1+col-row] = 0;
             }
-        }   
+        }
     }
     
-public:  
-    vector<vector<string>> solveNQueens(int n) 
-    {
+    
+    
+public:
+    vector<vector<string>> solveNQueens(int n) {
         vector<vector<string>> ans;
         // for storing the result
         vector<string> board(n);
@@ -74,9 +47,11 @@ public:
         {
             board[i] =s;
         }
-        solve(0,board, ans, n); // solving
+        // making 3 vector to store the visiting record of the quuens if visisted then we can
+        // simply say that this is not the correct place to place the queen
+        vector<int>leftrow(n,0), upperdiagonal(2 * n - 1, 0) , lowerdiagonal(2* n- 1, 0);
+        solve(0, board, ans, leftrow, upperdiagonal, lowerdiagonal,n);
         return ans;
         
     }
 };
-
